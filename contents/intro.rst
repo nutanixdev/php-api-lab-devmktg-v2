@@ -12,13 +12,13 @@ The Nutanix REST APIs allow you to create scripts that run system administration
 The API enables the use of HTTP requests to get information about the cluster as well as make changes to the configuration.
 Output from the API calls are returned in JSON format.
 
-The v2 API is an update of the v1 API. Users of the v1 API are encouraged to migrate to v2.
+The v3 API, supported in Prism Central only, is the latest intentful API released by Nutanix. All users are advised to migrate to v3, unless there is a requirement to use a v2-only API.
 
 Authentication
 ..............
 
 Authentication against the Nutanix REST APIs is done using HTTP Basic Authentication.
-Requests on HTTP port 80 are automatically redirected to HTTPS port 443.
+Requests on HTTP port 80 are automatically redirected to HTTPS on port 9440.
 This requires that a valid cluster or configured directory service credential is passed as part of the API request.
 
 For the purposes of this lab, we will assume you have access to at least a Nutanix cluster username with a minimum of READ access.
@@ -29,87 +29,45 @@ For those attendees or readers following this lab in a presenter-led environment
 Prism Element "vs" Prism Central
 ................................
 
-Prism Element APIs are cluster-specific i.e. designed to manage and manipulate entities on the cluster Prism is running on.
+The v2.0 Prism Element APIs are cluster-specific i.e. designed to manage and manipulate entities on the cluster Prism is running on.
 
-Prism Central APIs include a larger set of APIs designed to manipulate entities that aren't necessarily specific to a single cluster.
+The v3 Prism Central APIs include a larger set of APIs designed to manipulate entities that aren't necessarily specific to a single cluster.  This includes Nutanix Calm.
 
 API Versions
 ............
 
-As at January 2019, there are four publicly available Nutanix APIs.  Note that while Nutanix API v0.8 is available via the REST API Explorer in Nutanix Prism, it is strongly recommended to use v2.0 APIs instead.  v0.8 is mentioned here for completeness reasons only.
+As at January 2020, there are two main/publicly available Nutanix APIs.  Note that while Nutanix API v1 may be available via the REST API Explorer in Nutanix Prism, all users are advised to use v3 APIs instead.  v1 is mentioned here for completeness reasons only and should only be used in specific situations where v1 is the only choice.
 
 The API versions available today are as follows.
 
-- v1
 - v2.0
 - v3
 
 **Note re security:** In the sample commands below you'll see use of the `--insecure` cURL parameter.  This is used to get around SSL/TLS verification issues when using self-signed certificates.  Please consider the potential pitfalls and security implications of bypassing certificate verification before using `--insecure` in a production environment.  The same precautions apply when providing a username and password on the command-line.  This should be avoided when possible, since this method shows both the username and password in clear text.
 
-**Note re Windows systems:** When running the cURL sample commands on Windows 10, single-quote characters (`'`) may need to be replaced with double-quote characters (`"`).
+.. note::
 
-API v0.8
-~~~~~~~~
-
-Status: Super-ceded by API v2.0
-
-This set of APIs was available when API v1 didn’t yet have the capability to carry out some VM management operations, e.g. VM power state.
-
-Using a combination of v0.8 and v1 APIs, nearly all information and functions available in Prism could be completed via API requests.
-
-Here's an example of an API v0.8 request to list the VMs running on a cluster.
-
-.. code-block:: html
-
-  https://<cluster_virtual_ip>:9440/api/nutanix/v0.8/vms
-
-Alternatively, this HTTPS API request can be carried out using the `curl` command:
-
-.. code-block:: bash
-
-  curl -X GET \
-    'https://<cluster_virtual_ip>:9440/api/nutanix/v0.8/vms' \
-    -H 'Accept: application/json' \
-    -H 'Content-Type: application/json' \
-    --insecure \
-    --basic --user <cluster_username>:<cluster_password>
+   **Windows systems:** When running the cURL sample commands on Windows 10, single-quote characters (`'`) may need to be replaced with double-quote characters (`"`).
 
 API v1
 ~~~~~~
 
-Status: Available
+Status: Available but should only be used in specific situations (e.g. gathering VM performance metrics)
 
-This set of APIs, chronologically, was released before the v0.8 APIs. They were used, for example, to manipulate and view VMs, storage containers, storage pools etc. For some time, the v1 and v0.8 APIs were the only way we, as developers, had to interact with Nutanix clusters. Some of the API endpoints could only be used with the AHV hypervisor and some could be used across multiple hypervisors e.g. AHV and ESXi.
+This set of APIs were originally used to manipulate and view VMs, storage containers, storage pools etc.  As at January 2020, the v1 APIs should only be used in specific situations, e.g. to gather VM or storage container performance metrics.  All other API functions should be carried out via API v2.0 or v3.
 
-Here’s a simple example of a v1 API request to list all storage containers on a cluster:
-
-.. code-block:: html
-
-  https://<cluster_virtual_ip>:9440/api/nutanix/v1/containers
-
-Alternatively, this HTTPS API request can be carried out using the `curl` command:
-
-.. code-block:: bash
-
-  curl -X GET \
-    'https://<cluster_virtual_ip>:9440/api/nutanix/v1/containers?=' \
-    -H 'Accept: application/json' \
-    -H 'Content-Type: application/json' \
-    --insecure \
-    --basic --user <cluster_username>:<cluster_password>
-
-One of the reasons to use API v1 today is to collect entity performance information.  For example, the application we are building in this lab contains API v1 requests to collect storage performance.  An upcoming Nutanix Developer blog article will discuss the API v1 performance metrics and how to use them.
+So as not to confuse the content in this lab, please see the following blog article for information on performance metrics via API v1: `Gathering VM Performance Metrics via API <https://www.nutanix.dev/2019/09/23/getting-vm-performance-metrics-via-api>`_.
 
 API v2.0
 ~~~~~~~~
 
 Status: Available
 
-The v0.8 and v1 APIs worked really well. In fact, they were (and still are, in some respects) how the Prism UI gathers data from the cluster. Another over-simplification would be to say that the v2 APIs are where the v0.8 and v1 APIs came together. Many of the entities and endpoints available in v0.8 and v1 were made available in v2, along with a huge amount of backend cleanup, endpoint renaming and generally making the APIs better. The v2 APIs are also the first officially GA API made available by Nutanix.
+An over-simplification would be to say that the v2 APIs are where the older v0.8 and v1 APIs came together. Many of the entities and endpoints available in v0.8 and v1 were made available in v2, along with a huge amount of backend cleanup, endpoint renaming and generally making the APIs better. The v2 APIs were also the first officially GA API made available by Nutanix.
 
-If you have some exposure to the previous v0.8 and v1 APIs, moving to the v2 APIs will highlight a number of differences. For example “containers” got renamed to “storage_containers” and “storagePools” got renamed to “storage_pools”. The difference? A consistent naming convention in the form of snake-case across all entities.
+If you have some exposure to the previous API versions, moving to the v2.0 APIs will highlight a number of differences. For example “containers” got renamed to “storage_containers” and “storagePools” got renamed to “storage_pools”. The difference? A consistent naming convention in the form of snake-case across all entities.
 
-Here’s a basic example of a v2 API request to list all **storage_containers** on a cluster:
+Here’s a basic example of a v2.0 API request to list all **storage_containers** on a cluster:
 
 .. code-block:: html
 
@@ -190,10 +148,9 @@ Version Use Cases
 
 With what we know about the various API versions now, let's take a look at why you might use each API.
 
-- **v1**: Legacy application support and cluster-wide performance metrics.
-- **v2.0**: Migration away from legacy APIs, combination of older v0.8 and v1 APIs into single GA API, <em>cluster-specific</em> tasks e.g. storage container information & management.
-- **v3 on Prism Element**: Latest supported API aimed at managing <em>cluster-specific</em> entities such as VMs.
-- **v3 on Prism Central**: Latest supported API aimed at managing <em>environment-wide</em> configuration and entities.  Unlike API v3 on Prism Element, this includes a vast array of entities such as Nutanix Calm Blueprints, RBAC, Applications, Nutanix Flow Network Security Rules.
+- **v1**: Legacy application support and entity-specific performance metrics.  Without specific requirements, the v1 APIs should not be used.
+- **v2.0 via Prism Element**: Migration away from legacy APIs, combination of older v0.8 and v1 APIs into single GA API, <em>cluster-specific</em> tasks e.g. storage container information & management.
+- **v3 via Prism Central**: Latest supported API aimed at managing <em>environment-wide</em> configuration and entities.  Unlike API v2.0 on Prism Element, this includes a vast array of entities such as Nutanix Calm Blueprints, RBAC, Applications and Nutanix Flow Network Security Rules.  The v3 APIs are not supported on Prism Element.
 
 Summary
 .......
