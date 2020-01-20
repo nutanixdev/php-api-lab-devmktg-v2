@@ -71,7 +71,7 @@ Here’s a basic example of a v2.0 API request to list all **storage_containers*
 
 .. code-block:: html
 
-  https://<cluster_virtual_ip>:9440/api/nutanix/v2.0/storage_containers
+  https://<prism_element_ip>:9440/api/nutanix/v2.0/storage_containers
 
 Alternatively, this HTTPS API request can be carried out using the `curl` command:
 
@@ -109,7 +109,7 @@ How this all happens is somewhat beyond the scope of this particular lab but loo
 
 .. code-block:: html
 
-  https://<prism_central_or_cluster_virtual_ip>:9440/api/nutanix/v3/vms/list
+  https://<prism_central_ip>:9440/api/nutanix/v3/vms/list
 
 And the post body:
 
