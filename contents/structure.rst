@@ -49,6 +49,10 @@ With the new packages added, we need to tell Laravel how to use them.
       Laracasts\Flash\FlashServiceProvider::class,
       Collective\Html\HtmlServiceProvider::class,
 
+   After adding the providers, end of your 'providers' section should look as follows:
+
+   .. figure:: images/add_providers.png
+
 #. Navigate to the **aliases** section.
 
 #. Add the following lines just before the end of the **aliases** section.
@@ -60,6 +64,10 @@ With the new packages added, we need to tell Laravel how to use them.
       'Form' => Collective\Html\FormFacade::class,
       'Html' => Collective\Html\HtmlFacade::class,
       'Flash' => Laracasts\Flash\Flash::class,
+
+   After adding the aliases, end of your 'aliases' section should look as follows:
+
+   .. figure:: images/add_aliases.png
 
 Publish the 'Flash' package files
 .................................
@@ -165,7 +173,7 @@ The first controller method
 
 .. note::
 
-   The layout information in **dashboard.json** is stored after base64-encoded.  The **base64_decode** function decodes this data and returns it in plain-text JSON format.
+   The layout information in **dashboard.json** (created shortly) is stored after being base64-encoded.  The **base64_decode** function decodes this data and returns it in plain-text JSON format.
 
 Default layouts
 ...............
@@ -332,14 +340,6 @@ Because Laravel apps are based on the MVC (Model, View, Controller) design patte
             <div class="container" style="margin-top: 20px;">
                 <div class="row">
                     <div class="col-md-15">
-                        <div id="status_new" class="alert alert-warning">
-                            <span class="glyphicon glyphicon-time"></span>&nbsp;
-                            Your session has expired.&nbsp;&nbsp;Please <a href="{{ URL::to( '/signin' ) }}" title="Sign In">sign in</a> again to continue.
-                        </div>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-md-15">
                         @include( 'vendor.flash.message' )
                         <div class="container">
                             <div class="row">
@@ -416,7 +416,7 @@ Right now, we can't access the new home page - we need to tell Laravel how to di
         Route::post( 'ajax/pc-list-entities', 'AjaxController@postPcListEntities' );
 
 
-   The first line instructs Laravel serve all requests **/** (the app's root directory) by running the **getIndex** method from the **HomeController** controller.
+   The first line instructs Laravel serve all requests to **/** (the app's root directory) by running the **getIndex** method from the **HomeController** controller.
 
    The remaining lines specify which AjaxController methods to use for each of the URLs used by our app.  We'll create those shortly.
    
@@ -443,4 +443,4 @@ At this point, your application doesn't do anything useful.  However, the basic 
 
    .. figure:: images/unstyled.png
 
-   If you are wondering why it looks incredibly ugly right now, it's because we haven't added any styling or formatting, yet.  We'll do that in an upcoming step, though.
+   If you are wondering why our app looks fairly unattractive right now, it's because we haven't added any styling or formatting, yet.  We'll do that in an upcoming step, though.

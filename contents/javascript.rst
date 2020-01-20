@@ -25,11 +25,11 @@ To ensure everything is modular and easy to modify later, the **ntnx.js** JavaSc
         NtnxDashboard = {
 
             /**
-            * 
-            * @param {*} config 
-            * 
+            *
+            * @param {*} config
+            *
             * Initialise the application
-            * 
+            *
             */
             init: function ( config )
             {
@@ -49,11 +49,11 @@ To ensure everything is modular and easy to modify later, the **ntnx.js** JavaSc
             /* init */
 
             /**
-            * 
-            * @param {*} cell 
-            * 
+            *
+            * @param {*} cell
+            *
             * Remove existing contents of a specified DOM element
-            * 
+            *
             */
             resetCell: function( cell )
             {
@@ -62,18 +62,18 @@ To ensure everything is modular and easy to modify later, the **ntnx.js** JavaSc
             /* resetCell */
 
             /**
-            * 
-            * @param {*} token 
-            * @param {*} cvmAddress 
-            * @param {*} username 
-            * @param {*} password 
-            * @param {*} entity 
-            * @param {*} pageElement 
-            * @param {*} elementTitle 
-            * 
+            *
+            * @param {*} token
+            * @param {*} cvmAddress
+            * @param {*} username
+            * @param {*} password
+            * @param {*} entity
+            * @param {*} pageElement
+            * @param {*} elementTitle
+            *
             * main function to build and send the entity list requests
             * the previous version of this used a single function for each request
-            * 
+            *
             */
             pcListEntities: function( token, cvmAddress, username, password, entity, pageElement, elementTitle ) {
 
@@ -110,12 +110,12 @@ To ensure everything is modular and easy to modify later, the **ntnx.js** JavaSc
             /* pcListEntities */
 
             /**
-            * 
-            * @param {*} token 
-            * 
+            *
+            * @param {*} token
+            *
             * Remove the big graph DOM element from the page entirely
             * Legacy function from previous version, but may be used again
-            * 
+            *
             */
             removeGraph: function( token ) {
                 var gridster = $( '.gridster ul' ).gridster().data( 'gridster' );
@@ -125,11 +125,11 @@ To ensure everything is modular and easy to modify later, the **ntnx.js** JavaSc
             /* removeGraph */
 
             /**
-            * 
-            * @param {*} token 
-            * 
+            *
+            * @param {*} token
+            *
             * Revert the altered grid layout to the default from when the lab app was built
-            * 
+            *
             */
             restoreDefaultLayout: function( token ) {
                 var gridster = $( '.gridster ul' ).gridster().data( 'gridster' );
@@ -163,25 +163,11 @@ To ensure everything is modular and easy to modify later, the **ntnx.js** JavaSc
             /* restoreDefaultLayout */
 
             /**
-            * 
-            * @param {*} token 
-            * 
-            * Get the grid's layout and serialize it in a format appropriate for transmission
-            * 
-            */
-            serializeLayout: function( token ) {
-                var gridster = $( '.gridster ul' ).gridster().data( 'gridster' );
-                var json = gridster.serialize();
-                $( '#serialized' ).html( JSON.stringify( json ) );
-            },
-            /* serializeLayout */
-
-            /**
-            * 
-            * @param {*} token 
-            * 
+            *
+            * @param {*} token
+            *
             * Save the user's layout changes to on-disk JSON file
-            * 
+            *
             */
             saveLayout: function( token ) {
                 /* get the gridster object */
@@ -213,10 +199,10 @@ To ensure everything is modular and easy to modify later, the **ntnx.js** JavaSc
             /* saveLayout */
 
             /**
-            * 
+            *
             * Can't remember what this is for lol
             * Just kidding - it's for some tests carried out during development
-            * 
+            *
             */
             s4: function()
             {
@@ -225,10 +211,10 @@ To ensure everything is modular and easy to modify later, the **ntnx.js** JavaSc
             /* s4 */
 
             /**
-            * 
+            *
             * Load the existing/saved grid layout from dashboard.json
             * This file holds the default layout if no changes have been made, or the layout setup by the user after saving
-            * 
+            *
             */
             loadLayout: function()
             {
@@ -270,9 +256,9 @@ To ensure everything is modular and easy to modify later, the **ntnx.js** JavaSc
             /* loadLayout */
 
             /**
-            * 
+            *
             * Setup the page's main grid
-            * 
+            *
             */
             setupGridster: function ()
             {
@@ -312,9 +298,9 @@ To ensure everything is modular and easy to modify later, the **ntnx.js** JavaSc
             /* setupGridster */
 
             /**
-            * 
+            *
             * Apply tooltips to various elements and setup the delay on some animations
-            * 
+            *
             */
             setUI: function ()
             {
@@ -330,10 +316,10 @@ To ensure everything is modular and easy to modify later, the **ntnx.js** JavaSc
             /* setUI */
 
             /**
-            * 
+            *
             * Bind events that will get triggered in response to various actions
             * In particular, button clicks
-            * 
+            *
             */
             bindEvents: function()
             {
@@ -357,20 +343,16 @@ To ensure everything is modular and easy to modify later, the **ntnx.js** JavaSc
                         $( '#bigGraph' ).html( '<span class="gs-resize-handle gs-resize-handle-both"></span>' ).removeClass( 'info_hilite' ).removeClass( 'info_error' ).addClass( 'info_big' ).append( '<div style="color: #6F787E; font-size: 25%; padding: 10px 0 0 0;">Ok ...</div><div>Gathering environment details ...</div>');
                         NtnxDashboard.resetCell( 'hints' );
                         $( '#hints' ).html( '<span class="gs-resize-handle gs-resize-handle-both"></span>' ).addClass( 'info_hilite' ).append( '<div style="color: #6F787E; font-size: 25%; padding: 10px 0 0 0;">Also ...</div><div>Drag &amp; Drop<br>The Boxes</div>');
-                    
+
                         NtnxDashboard.pcListEntities( $( '#csrf_token' ).val(), cvmAddress, username, password, 'cluster', 'registered_clusters', 'Registered Clusters' );
                         NtnxDashboard.pcListEntities( $( '#csrf_token' ).val(), cvmAddress, username, password, 'image', 'image_count', 'Images' );
                         NtnxDashboard.pcListEntities( $( '#csrf_token' ).val(), cvmAddress, username, password, 'vm', 'vm_count', 'VMs' );
                         NtnxDashboard.pcListEntities( $( '#csrf_token' ).val(), cvmAddress, username, password, 'host', 'host_count', 'Hosts &amp; PC Nodes' );
                         NtnxDashboard.pcListEntities( $( '#csrf_token' ).val(), cvmAddress, username, password, 'project', 'project_count', 'Project Count' );
-                        NtnxDashboard.pcListEntities( $( '#csrf_token' ).val(), cvmAddress, username, password, 'app', 'app_count', 'Calm' );
+                        NtnxDashboard.pcListEntities( $( '#csrf_token' ).val(), cvmAddress, username, password, 'app', 'app_count', 'Calm Apps' );
+
                     }
 
-                    e.preventDefault();
-                });
-
-                $( '.serializeLayout' ).on( 'click', function( e ) {
-                    NtnxDashboard.serializeLayout( $( '#csrf_token' ).val() );
                     e.preventDefault();
                 });
 
@@ -386,16 +368,6 @@ To ensure everything is modular and easy to modify later, the **ntnx.js** JavaSc
 
                 $( '.removeGraph' ).on( 'click', function( e ) {
                     NtnxDashboard.removeGraph( $( '#csrf_token' ).val() );
-                    e.preventDefault();
-                });
-
-                $( '.containerStats' ).on( 'click', function( e ) {
-                    NtnxDashboard.containerInfo( $( '#csrf_token' ).val(), $( '#cvmAddress' ).val(), $( '#username' ).val(), $( '#password' ).val() );
-                    e.preventDefault();
-                });
-
-                $( '.testButton' ).on( 'click', function( e ) {
-                    $( '#registered_clusters' ).html( 'Hello' );
                     e.preventDefault();
                 });
 

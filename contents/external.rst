@@ -8,7 +8,7 @@ Because there's no need for us to write these packages ourselves, we can grab th
 Checking directory structure
 ............................
 
-#. Create the following directories and files.  Windows users can create new files using Notepad.
+#. Create the following directories and files.  Windows users can create new folders using Windows Explorer and new files using Notepad.
 
    - **public/css**
    - **public/css/ntnx.css**
