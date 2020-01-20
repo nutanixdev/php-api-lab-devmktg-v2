@@ -162,6 +162,11 @@ The first controller method
   - Loads a default layout from a file provided with the app - we will create that file shortly.
   - Using the layout information that has been created, it returns an HTML view to the user.
 
+
+.. note::
+
+   The layout information in **dashboard.json** is stored after base64-encoded.  The **base64_decode** function decodes this data and returns it in plain-text JSON format.
+
 Default layouts
 ...............
 
@@ -175,7 +180,7 @@ As mentioned above, a default layout is loaded when the user browses to **/**.  
 
    .. code-block:: json
 
-      {"version":"1.0","layout":"W3siaWQiOiJjbHVzdGVyU3VtbWFyeSIsImNvbCI6MSwicm93IjoxLCJzaXplX3giOjIsInNpemVfeSI6MX0seyJpZCI6Im5vc1ZlcnNpb24iLCJjb2wiOjMsInJvdyI6MSwic2l6ZV94IjoyLCJzaXplX3kiOjF9LHsiaWQiOiJtaXNjMSIsImNvbCI6NSwicm93IjoxLCJzaXplX3giOjEsInNpemVfeSI6MX0seyJpZCI6Im1pc2MyIiwiY29sIjo2LCJyb3ciOjEsInNpemVfeCI6MSwic2l6ZV95IjoxfSx7ImlkIjoiaG9zdHMiLCJjb2wiOjEsInJvdyI6Miwic2l6ZV94IjoxLCJzaXplX3kiOjF9LHsiaWQiOiJiaWdHcmFwaCIsImNvbCI6Miwicm93IjoyLCJzaXplX3giOjIsInNpemVfeSI6Mn0seyJpZCI6InZtSW5mbyIsImNvbCI6NCwicm93IjoyLCJzaXplX3giOjIsInNpemVfeSI6MX0seyJpZCI6ImNvbnRhaW5lcnMiLCJjb2wiOjYsInJvdyI6Miwic2l6ZV94IjoxLCJzaXplX3kiOjJ9LHsiaWQiOiJibG9ja3MiLCJjb2wiOjEsInJvdyI6Mywic2l6ZV94IjoxLCJzaXplX3kiOjF9LHsiaWQiOiJoaW50cyIsImNvbCI6NCwicm93IjozLCJzaXplX3giOjIsInNpemVfeSI6MX0seyJpZCI6ImZvb3RlcldpZGdldCIsImNvbCI6MSwicm93Ijo0LCJzaXplX3giOjYsInNpemVfeSI6MX1d"}
+      {"version":"1.0","layout":"WwogIHsKICAgICJpZCI6ICJyZWdpc3RlcmVkX2NsdXN0ZXJzIiwKICAgICJjb2wiOiAxLAogICAgInJvdyI6IDEsCiAgICAic2l6ZV94IjogMiwKICAgICJzaXplX3kiOiAxCiAgfSwKICB7CiAgICAiaWQiOiAiaW1hZ2VfY291bnQiLAogICAgImNvbCI6IDMsCiAgICAicm93IjogMSwKICAgICJzaXplX3giOiAyLAogICAgInNpemVfeSI6IDEKICB9LAogIHsKICAgICJpZCI6ICJ2bV9jb3VudCIsCiAgICAiY29sIjogNSwKICAgICJyb3ciOiAxLAogICAgInNpemVfeCI6IDIsCiAgICAic2l6ZV95IjogMQogIH0sCiAgewogICAgImlkIjogImhvc3RfY291bnQiLAogICAgImNvbCI6IDEsCiAgICAicm93IjogMiwKICAgICJzaXplX3giOiAxLAogICAgInNpemVfeSI6IDEKICB9LAogIHsKICAgICJpZCI6ICJiaWdHcmFwaCIsCiAgICAiY29sIjogMiwKICAgICJyb3ciOiAyLAogICAgInNpemVfeCI6IDIsCiAgICAic2l6ZV95IjogMgogIH0sCiAgewogICAgImlkIjogInByb2plY3RfY291bnQiLAogICAgImNvbCI6IDQsCiAgICAicm93IjogMiwKICAgICJzaXplX3giOiAyLAogICAgInNpemVfeSI6IDEKICB9LAogIHsKICAgICJpZCI6ICJwcm9qZWN0X2RldGFpbHMiLAogICAgImNvbCI6IDYsCiAgICAicm93IjogMiwKICAgICJzaXplX3giOiAxLAogICAgInNpemVfeSI6IDIKICB9LAogIHsKICAgICJpZCI6ICJhcHBfY291bnQiLAogICAgImNvbCI6IDEsCiAgICAicm93IjogMywKICAgICJzaXplX3giOiAxLAogICAgInNpemVfeSI6IDEKICB9LAogIHsKICAgICJpZCI6ICJoaW50cyIsCiAgICAiY29sIjogNCwKICAgICJyb3ciOiAzLAogICAgInNpemVfeCI6IDIsCiAgICAic2l6ZV95IjogMQogIH0sCiAgewogICAgImlkIjogImZvb3RlcldpZGdldCIsCiAgICAiY29sIjogMSwKICAgICJyb3ciOiA0LAogICAgInNpemVfeCI6IDYsCiAgICAic2l6ZV95IjogMQogIH0KXQ=="}
 
 #. Inside the **resources** directory, create a subdirectory named **install**.
 
@@ -187,7 +192,78 @@ As mentioned above, a default layout is loaded when the user browses to **/**.  
 
    .. code-block:: json
 
-      [{"id":"clusterSummary","col":1,"row":1,"size_x":2,"size_y":1},{"id":"hosts","col":1,"row":2,"size_x":1,"size_y":1},{"id":"blocks","col":1,"row":3,"size_x":1,"size_y":1},{"id":"nosVersion","col":3,"row":1,"size_x":2,"size_y":1},{"id":"bigGraph","col":2,"row":2,"size_x":2,"size_y":2},{"id":"misc1","col":5,"row":1,"size_x":1,"size_y":1},{"id":"vmInfo","col":4,"row":2,"size_x":2,"size_y":1},{"id":"hints","col":4,"row":3,"size_x":2,"size_y":1},{"id":"misc2","col":6,"row":1,"size_x":1,"size_y":1},{"id":"containers","col":6,"row":2,"size_x":1,"size_y":2},{"id":"footerWidget","col":1,"row":4,"size_x":6,"size_y":1}]
+      [
+        {
+            "id": "registered_clusters",
+            "col": 1,
+            "row": 1,
+            "size_x": 2,
+            "size_y": 1
+        },
+        {
+            "id": "image_count",
+            "col": 3,
+            "row": 1,
+            "size_x": 2,
+            "size_y": 1
+        },
+        {
+            "id": "vm_count",
+            "col": 5,
+            "row": 1,
+            "size_x": 2,
+            "size_y": 1
+        },
+        {
+            "id": "host_count",
+            "col": 1,
+            "row": 2,
+            "size_x": 1,
+            "size_y": 1
+        },
+        {
+            "id": "bigGraph",
+            "col": 2,
+            "row": 2,
+            "size_x": 2,
+            "size_y": 2
+        },
+        {
+            "id": "project_count",
+            "col": 4,
+            "row": 2,
+            "size_x": 2,
+            "size_y": 1
+        },
+        {
+            "id": "project_details",
+            "col": 6,
+            "row": 2,
+            "size_x": 1,
+            "size_y": 2
+        },
+        {
+            "id": "app_count",
+            "col": 1,
+            "row": 3,
+            "size_x": 1,
+            "size_y": 1
+        },
+        {
+            "id": "hints",
+            "col": 4,
+            "row": 3,
+            "size_x": 2,
+            "size_y": 1
+        },
+        {
+            "id": "footerWidget",
+            "col": 1,
+            "row": 4,
+            "size_x": 6,
+            "size_y": 1
+        }
+      ]
 
    The JSON in these files will be used and explained in more detail in a later step.
 
@@ -233,21 +309,21 @@ Because Laravel apps are based on the MVC (Model, View, Controller) design patte
 
                         <ul class="nav navbar-nav">
 
-                            {!! Form::hidden( 'csrf_token', csrf_token(), [ 'id' => 'csrf_token' ] ) !!}
                             <li><a href="#">Home</a></li>
                             <li><a href="#" class="saveLayout">Save Layout</a></li>
                             <li><a href="#" class="defaultLayout">Revert to Default Layout</a></li>
 
                         </ul>
 
-                        {!! Form::open( [ 'class' => 'navbar-form navbar-left' ] ) !!}
+                        <form action="/" method="POST" class="navbar-form navbar-form-left">
+                        {!! Form::hidden( 'csrf_token', csrf_token(), [ 'id' => 'csrf_token' ] ) !!}
                         <div class="form-group">
-                            {!! Form::text( 'cvmAddress', null, [ 'id' => 'cvmAddress', 'class' => 'form-control', 'placeholder' => 'Cluster/CVM IP' ] ) !!}
-                            {!! Form::text( 'username', null, [ 'id' => 'username', 'class' => 'form-control', 'placeholder' => 'Cluster Username' ] ) !!}
-                            {!! Form::password( 'password', [ 'id' => 'password', 'class' => 'form-control', 'placeholder' => 'Cluster Password' ] ) !!}
+                            {!! Form::text( 'cvmAddress', null, [ 'id' => 'cvmAddress', 'class' => 'form-control', 'placeholder' => 'Prism Central IP' ] ) !!}
+                            {!! Form::text( 'username', null, [ 'id' => 'username', 'class' => 'form-control', 'placeholder' => 'Prism Central Username' ] ) !!}
+                            {!! Form::password( 'password', [ 'id' => 'password', 'class' => 'form-control', 'placeholder' => 'Prism Central Password' ] ) !!}
                             {!! Form::submit( 'Go!', [ 'id' => 'goButton', 'class' => 'btn btn-primary' ] ) !!}
                         </div>
-                        {!! Form::close() !!}
+                        </form>
 
                     </div>
                 </div>
@@ -311,21 +387,40 @@ Connecting the main view
 
 Right now, we can't access the new home page - we need to tell Laravel how to display that page, based on the URL provided by the user.
 
-#. Open the **routes/web.php** file and replace everything below the comment block, as follows:
+#. Open the **routes/web.php** file and ensure the contents are as follows:
 
    .. code-block:: php
 
-      Route::get( '/', 'HomeController@getIndex' );
-      Route::post( 'ajax/load-layout', 'AjaxController@postLoadLayout' );
-      Route::post( 'ajax/load-default', 'AjaxController@postLoadDefault' );
-      Route::post( 'ajax/save-to-json', 'AjaxController@postSaveToJson' );
-      Route::post( 'ajax/physical-info', 'AjaxController@postPhysicalInfo') ;
-      Route::post( 'ajax/vm-info', 'AjaxController@postVmInfo') ;
-      Route::post( 'ajax/cluster-info', 'AjaxController@postClusterInfo') ;
-      Route::post( 'ajax/container-info', 'AjaxController@postContainerInfo') ;
+        <?php
+
+        /*
+        |--------------------------------------------------------------------------
+        | Web Routes
+        |--------------------------------------------------------------------------
+        |
+        | Here is where you can register web routes for your application. These
+        | routes are loaded by the RouteServiceProvider within a group which
+        | contains the "web" middleware group. Now create something great!
+        |
+        */
+
+        Route::get( '/', 'HomeController@getIndex' );
+        Route::post( 'ajax/load-layout', 'AjaxController@postLoadLayout' );
+        Route::post( 'ajax/load-default', 'AjaxController@postLoadDefault' );
+        Route::post( 'ajax/save-to-json', 'AjaxController@postSaveToJson' );
+        Route::post( 'ajax/physical-info', 'AjaxController@postPhysicalInfo') ;
+        Route::post( 'ajax/vm-info', 'AjaxController@postVmInfo') ;
+        Route::post( 'ajax/cluster-info', 'AjaxController@postClusterInfo') ;
+        Route::post( 'ajax/container-info', 'AjaxController@postContainerInfo') ;
+        Route::post( 'ajax/pc-cluster-info', 'AjaxController@postPcClusterInfo' );
+        Route::post( 'ajax/pc-list-entities', 'AjaxController@postPcListEntities' );
+
 
    The first line instructs Laravel serve all requests **/** (the app's root directory) by running the **getIndex** method from the **HomeController** controller.
-   The second line instructs Laravel to serve all requests prefixed with **/ajax/** by running the matching method from the **AjaxController** controller.  We will create this controller later.
+
+   The remaining lines specify which AjaxController methods to use for each of the URLs used by our app.  We'll create those shortly.
+   
+   **Route::get** specifies that a route can only be accessed via an HTTP GET request, whereas **Route::post** specifies that a route can only be accessed via an HTTP POST request.
 
 Initial app testing
 ...................

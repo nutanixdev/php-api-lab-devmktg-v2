@@ -24,6 +24,13 @@ To ensure everything is modular and easy to modify later, the **ntnx.js** JavaSc
         var NtnxDashboard;
         NtnxDashboard = {
 
+            /**
+            * 
+            * @param {*} config 
+            * 
+            * Initialise the application
+            * 
+            */
             init: function ( config )
             {
                 this.config = config;
@@ -41,171 +48,89 @@ To ensure everything is modular and easy to modify later, the **ntnx.js** JavaSc
             },
             /* init */
 
+            /**
+            * 
+            * @param {*} cell 
+            * 
+            * Remove existing contents of a specified DOM element
+            * 
+            */
             resetCell: function( cell )
             {
                 $( '#' + cell ).html( '<span class="gs-resize-handle gs-resize-handle-both"></span>' );
             },
+            /* resetCell */
 
-            physicalInfo: function( token, cvmAddress, username, password )
-            {
-                physicalData = $.ajax({
-                    url: '/ajax/physical-info',
+            /**
+            * 
+            * @param {*} token 
+            * @param {*} cvmAddress 
+            * @param {*} username 
+            * @param {*} password 
+            * @param {*} entity 
+            * @param {*} pageElement 
+            * @param {*} elementTitle 
+            * 
+            * main function to build and send the entity list requests
+            * the previous version of this used a single function for each request
+            * 
+            */
+            pcListEntities: function( token, cvmAddress, username, password, entity, pageElement, elementTitle ) {
+
+                pcEntityInfo = $.ajax({
+                    url: '/ajax/pc-list-entities',
                     type: 'POST',
                     dataType: 'json',
-                    data: { _token: token, _cvmAddress: cvmAddress, _username: username, _password: password },
+                    data: { _token: token, _cvmAddress: cvmAddress, _username: username, _password: password, _entity: entity, _pageElement: pageElement, _elementTitle: elementTitle },
                 });
 
-                physicalData.done( function(data) {
-                    NtnxDashboard.resetCell( 'hosts' );
-                    $( '#hosts' ).addClass( 'info_big' ).append( '<div style="color: #6F787E; font-size: 25%; padding: 10px 0 0 0;">' + data.hostCount + ' Hosts</div>' );
-                    $( '#hosts' ).append( '<div style="color: #6F787E; font-size: 25%; padding: 10px 0 0 0;">' + data.hostSerials + '</div>' );
-                });
+                pcEntityInfo.done( function(data) {
 
-                physicalData.fail(function ( jqXHR, textStatus, errorThrown )
-                {
-                    $( '#status_new' ).removeClass().html( textStatus + ' - ' + errorThrown ).addClass( 'alert' ).addClass( 'alert-error' );
-                });
-            },
+                    NtnxDashboard.resetCell( pageElement );
+                    $( '#' + pageElement  ).addClass( 'info_big' ).append( '<div style="color: #6F787E; font-size: 25%; padding: 10px 0 0 0;">' + elementTitle + '</div><div>' + data.results.metadata.total_matches + '</div><div></div>');
 
-            vmInfo: function( token, cvmAddress, username, password )
-            {
+                    switch( entity ) {
+                        case 'project':
 
-                vmData = $.ajax({
-                    url: '/ajax/vm-info',
-                    type: 'POST',
-                    dataType: 'json',
-                    data: { _token: token, _cvmAddress: cvmAddress, _username: username, _password: password },
-                });
+                            $( '#project_details' ).addClass( 'info_big' ).html( '<div style="color: #6F787E; font-size: 25%; padding: 10px 0 0 0;">Project List</div>' );
 
-                vmData.done( function(data) {
-                    NtnxDashboard.resetCell( 'vmInfo' );
-                    $( '#vmInfo' ).addClass( 'info_big' ).append( '<div style="color: #6F787E; font-size: 25%; padding: 10px 0 0 0;">VM(s)</div><div>' + data.vmCount + '</div><div></div>');
-                });
+                            $( data.results.entities ).each( function( index, item ) {
+                                $( '#project_details' ).append( '<div style="color: #6F787E; font-size: 25%; padding: 10px 0 0 0;">' +  item.status.name + '</div>' );
+                            });
 
-                vmData.fail(function ( jqXHR, textStatus, errorThrown )
-                {
-                    $( '#status_new' ).removeClass().html( textStatus + ' - ' + errorThrown ).addClass( 'alert' ).addClass( 'alert-error' );
-                });
-            },
+                            $( '#project_details' ).append( '</div><div></div>' );
 
-            clusterInfo: function( token, cvmAddress, username, password )
-            {
+                        default:
+                            break;
+                    }
 
-                clusterInfo = $.ajax({
-                    url: '/ajax/cluster-info',
-                    type: 'POST',
-                    dataType: 'json',
-                    data: { _token: token, _cvmAddress: cvmAddress, _username: username, _password: password },
-                });
-
-                clusterInfo.done( function(data) {
-                    NtnxDashboard.resetCell( 'nosVersion' );
-                    $( '#nosVersion' ).addClass( 'info_big' ).append( '<div style="color: #6F787E; font-size: 25%; padding: 10px 0 0 0;">NOS</div><div>' + data.results.version + '</div><div></div>');
-
-                    NtnxDashboard.resetCell( 'clusterSummary' );
-                    $( '#clusterSummary' ).addClass( 'info_big' ).append( '<div style="color: #6F787E; font-size: 25%; padding: 10px 0 0 0;">Cluster</div><div>' + data.results.name + '</div><div></div>');
-
-                    NtnxDashboard.resetCell( 'blocks' );
-                    $( '#blocks' ).addClass( 'info_big' ).append( '<div style="color: #6F787E; font-size: 25%; padding: 10px 0 0 0;">Hypervisors</div>' );
-                    $( '#blocks' ).addClass( 'info_big' ).append( '<div style="color: #6F787E; font-size: 25%; padding: 10px 0 0 0;">' );
-
-                    $( data.results.hypervisor_types ).each( function( index, item ) {
-                        switch( item )
-                        {
-                            case 'kKvm':
-                                $( '#blocks' ).append( 'AHV' );
-                                break;
-                            case 'kVMware':
-                                $( '#blocks' ).append( 'ESXi' );
-                                break;
-                            case 'kHyperv':
-                                $( '#blocks' ).append( 'Hyper-V' );
-                                break;
-                        }
-                    });
-
-                    $( '#blocks' ).append( '</div' );
-
-                });
-
-                clusterInfo.fail(function ( jqXHR, textStatus, errorThrown )
-                {
-                    $( '#status_new' ).removeClass().html( textStatus + ' - ' + errorThrown ).addClass( 'alert' ).addClass( 'alert-error' );
                 });
 
             },
+            /* pcListEntities */
 
-            containerInfo: function( token, cvmAddress, username, password ) {
-
-                /* AJAX call to get some container stats */
-                request = $.ajax({
-                    url: '/ajax/container-info',
-                    type: 'POST',
-                    dataType: 'json',
-                    data: { _token: token, _cvmAddress: cvmAddress, _username: username, _password: password },
-                });
-
-                request.done( function(data) {
-                    var plot1 = $.jqplot ('controllerIOPS', data.stats, {
-                        title: 'Controller Average I/O Latency',
-                        animate: true,
-                        axesDefaults: {
-                            labelRenderer: $.jqplot.CanvasAxisLabelRenderer,
-                            tickOptions: {
-                                showMark: false,
-                                show: true,
-                            },
-                            showTickMarks: false,
-                            showTicks: false
-                        },
-                        seriesDefaults: {
-                            rendererOptions: {
-                                smooth: false
-                            },
-                            showMarker: false,
-                            fill: true,
-                            fillAndStroke: true,
-                            color: '#b4d194',
-                            fillColor: '#b4d194',
-                            fillAlpha: '0.3',
-                            // fillColor: '#bfde9e',
-                            shadow: false,
-                            shadowAlpha: 0.1,
-                        },
-                        axes: {
-                            xaxis: {
-                                min: 5,
-                                max: 120,
-                                tickOptions: {
-                                    showGridline: true,
-                                }
-                            },
-                            yaxis: {
-                                tickOptions: {
-                                    showGridline: false,
-                                }
-                            }
-                        }
-                    });
-
-                    NtnxDashboard.resetCell( 'containers' );
-                    $( '#containers' ).addClass( 'info_big' ).append( '<div style="color: #6F787E; font-size: 25%; padding: 10px 0 0 0;">Container(s)</div><div>' + data.containerCount + '</div><div></div>');
-
-                });
-
-                request.fail(function ( jqXHR, textStatus, errorThrown )
-                {
-                    $( '#status_new' ).removeClass().html( textStatus + ' - ' + errorThrown ).addClass( 'alert' ).addClass( 'alert-error' );
-                });
-
-            },
-
+            /**
+            * 
+            * @param {*} token 
+            * 
+            * Remove the big graph DOM element from the page entirely
+            * Legacy function from previous version, but may be used again
+            * 
+            */
             removeGraph: function( token ) {
                 var gridster = $( '.gridster ul' ).gridster().data( 'gridster' );
                 var element = $( '#bigGraph' );
                 gridster.remove_widget( element );
             },
+            /* removeGraph */
 
+            /**
+            * 
+            * @param {*} token 
+            * 
+            * Revert the altered grid layout to the default from when the lab app was built
+            * 
+            */
             restoreDefaultLayout: function( token ) {
                 var gridster = $( '.gridster ul' ).gridster().data( 'gridster' );
                 gridster.remove_all_widgets();
@@ -235,13 +160,29 @@ To ensure everything is modular and easy to modify later, the **ntnx.js** JavaSc
                 });
 
             },
+            /* restoreDefaultLayout */
 
+            /**
+            * 
+            * @param {*} token 
+            * 
+            * Get the grid's layout and serialize it in a format appropriate for transmission
+            * 
+            */
             serializeLayout: function( token ) {
                 var gridster = $( '.gridster ul' ).gridster().data( 'gridster' );
                 var json = gridster.serialize();
                 $( '#serialized' ).html( JSON.stringify( json ) );
             },
+            /* serializeLayout */
 
+            /**
+            * 
+            * @param {*} token 
+            * 
+            * Save the user's layout changes to on-disk JSON file
+            * 
+            */
             saveLayout: function( token ) {
                 /* get the gridster object */
                 var gridster = $( '.gridster ul' ).gridster().data( 'gridster' );
@@ -269,12 +210,26 @@ To ensure everything is modular and easy to modify later, the **ntnx.js** JavaSc
                 });
 
             },
+            /* saveLayout */
 
+            /**
+            * 
+            * Can't remember what this is for lol
+            * Just kidding - it's for some tests carried out during development
+            * 
+            */
             s4: function()
             {
                 return Math.floor((1 + Math.random()) * 0x10000).toString(16).substring(1);
             },
+            /* s4 */
 
+            /**
+            * 
+            * Load the existing/saved grid layout from dashboard.json
+            * This file holds the default layout if no changes have been made, or the layout setup by the user after saving
+            * 
+            */
             loadLayout: function()
             {
                 request = $.ajax({
@@ -292,20 +247,16 @@ To ensure everything is modular and easy to modify later, the **ntnx.js** JavaSc
                     var gridster = $( '.gridster ul' ).gridster().data( 'gridster' );
                     var serialization = JSON.parse( data.layout );
 
-                    // $( '#serialized' ).html( data.layout );
-
                     serialization = Gridster.sort_by_row_and_col_asc(serialization);
                     $.each( serialization, function() {
-                        // gridster.add_widget('<li id="' + this.id + '"><div class="panel"><div class="panel-body"></div></div></li>', this.size_x, this.size_y, this.col, this.row);
                         gridster.add_widget('<li id="' + this.id + '" />', this.size_x, this.size_y, this.col, this.row);
                     });
 
                     /* add the chart markup to the largest containers */
-                    // $( 'li#bigGraph' ).addClass( 'panel' ).append( '<div class="panel-body"><div id="chartdiv" style="height: 330px; width: 330px; text-align: center;"></div></div>' );
                     $( 'li#footerWidget' ).addClass( 'panel' ).append( '<div class="panel-body"><div id="controllerIOPS" style="height: 150px; width: 1000px; text-align: center;"></div></div>' );
 
                     NtnxDashboard.resetCell( 'bigGraph' );
-                    $( '#bigGraph' ).addClass( 'info_hilite' ).append( '<div style="color: #6F787E; font-size: 25%; padding: 10px 0 0 0;">Hey ...</div><div>Enter your cluster details above, then click the Go button ...</div>');
+                    $( '#bigGraph' ).addClass( 'info_hilite' ).append( '<div style="color: #6F787E; font-size: 25%; padding: 10px 0 0 0;">Hey ...</div><div>Enter your Prism Central details above, then click the Go button ...</div>');
                     $( '#hints' ).addClass( 'info_hilite' ).append( '<div style="color: #6F787E; font-size: 25%; padding: 10px 0 0 0;">Also ...</div><div>Drag &amp; Drop<br>The Boxes</div>');
 
                 });
@@ -316,7 +267,13 @@ To ensure everything is modular and easy to modify later, the **ntnx.js** JavaSc
                     alert( 'Unfortunately an error occurred while processing the request.  Status: ' + textStatus + ', Error Thrown: ' + errorThrown );
                 });
             },
+            /* loadLayout */
 
+            /**
+            * 
+            * Setup the page's main grid
+            * 
+            */
             setupGridster: function ()
             {
                 $( function ()
@@ -352,11 +309,15 @@ To ensure everything is modular and easy to modify later, the **ntnx.js** JavaSc
 
                 } );
             },
+            /* setupGridster */
 
+            /**
+            * 
+            * Apply tooltips to various elements and setup the delay on some animations
+            * 
+            */
             setUI: function ()
             {
-
-                // $( 'input#date' ).datepicker();
 
                 $( 'div.alert-success' ).delay( 3000 ).slideUp( 1000 );
                 $( 'div.alert-info' ).delay( 3000 ).slideUp( 1000 );
@@ -368,6 +329,12 @@ To ensure everything is modular and easy to modify later, the **ntnx.js** JavaSc
             },
             /* setUI */
 
+            /**
+            * 
+            * Bind events that will get triggered in response to various actions
+            * In particular, button clicks
+            * 
+            */
             bindEvents: function()
             {
 
@@ -387,14 +354,16 @@ To ensure everything is modular and easy to modify later, the **ntnx.js** JavaSc
                     else
                     {
                         NtnxDashboard.resetCell( 'bigGraph' );
-                        $( '#bigGraph' ).html( '<span class="gs-resize-handle gs-resize-handle-both"></span>' ).removeClass( 'info_hilite' ).removeClass( 'info_error' ).addClass( 'info_big' ).append( '<div style="color: #6F787E; font-size: 25%; padding: 10px 0 0 0;">Ok ...</div><div>Let\'s test your cluster details ...</div>');
+                        $( '#bigGraph' ).html( '<span class="gs-resize-handle gs-resize-handle-both"></span>' ).removeClass( 'info_hilite' ).removeClass( 'info_error' ).addClass( 'info_big' ).append( '<div style="color: #6F787E; font-size: 25%; padding: 10px 0 0 0;">Ok ...</div><div>Gathering environment details ...</div>');
                         NtnxDashboard.resetCell( 'hints' );
                         $( '#hints' ).html( '<span class="gs-resize-handle gs-resize-handle-both"></span>' ).addClass( 'info_hilite' ).append( '<div style="color: #6F787E; font-size: 25%; padding: 10px 0 0 0;">Also ...</div><div>Drag &amp; Drop<br>The Boxes</div>');
-
-                        NtnxDashboard.clusterInfo( $( '#csrf_token' ).val(), cvmAddress, username, password );
-                        NtnxDashboard.physicalInfo( $( '#csrf_token' ).val(), cvmAddress, username, password );
-                        NtnxDashboard.vmInfo( $( '#csrf_token' ).val(), cvmAddress, username, password );
-                        NtnxDashboard.containerInfo( $( '#csrf_token' ).val(), cvmAddress, username, password );
+                    
+                        NtnxDashboard.pcListEntities( $( '#csrf_token' ).val(), cvmAddress, username, password, 'cluster', 'registered_clusters', 'Registered Clusters' );
+                        NtnxDashboard.pcListEntities( $( '#csrf_token' ).val(), cvmAddress, username, password, 'image', 'image_count', 'Images' );
+                        NtnxDashboard.pcListEntities( $( '#csrf_token' ).val(), cvmAddress, username, password, 'vm', 'vm_count', 'VMs' );
+                        NtnxDashboard.pcListEntities( $( '#csrf_token' ).val(), cvmAddress, username, password, 'host', 'host_count', 'Hosts &amp; PC Nodes' );
+                        NtnxDashboard.pcListEntities( $( '#csrf_token' ).val(), cvmAddress, username, password, 'project', 'project_count', 'Project Count' );
+                        NtnxDashboard.pcListEntities( $( '#csrf_token' ).val(), cvmAddress, username, password, 'app', 'app_count', 'Calm' );
                     }
 
                     e.preventDefault();
@@ -426,7 +395,7 @@ To ensure everything is modular and easy to modify later, the **ntnx.js** JavaSc
                 });
 
                 $( '.testButton' ).on( 'click', function( e ) {
-                    $( '#clusterSummary' ).html( 'Hello' );
+                    $( '#registered_clusters' ).html( 'Hello' );
                     e.preventDefault();
                 });
 
@@ -442,9 +411,11 @@ To ensure everything is modular and easy to modify later, the **ntnx.js** JavaSc
 What does the **ntnx.js** script do?  The functions of **ntnx.ns**, in load-time order, are as follows.
 
 1. Initialises the user interface via the **init** function.
-2. Create an instance of the jQuery **gridster** plugin class and configures the properties of that instance.  For our app, we are setting things like the element margins, the number of columns and telling the elements they are "draggable".
+2. Creates an instance of the jQuery **gridster** plugin class and configures the properties of that instance.  For our app, we are setting things like the element margins, the number of columns and telling the elements they are "draggable".
 3. Altering a small number of UI elements so they appear correctly.
 4. Binding the user interface events to other functions within **ntnx.js**.  This is a critical step as it instructs the browser and the JavaScript what to do when "something" happens.  For example, which part of the script should execute when a user enters cluster info and clicks the "Go!" button?
+
+You'll note that many of the functions in **ntnx.js** are "mirrored" by methods in the **AjaxController.php** class.  This is very much by design as click events in our JavaScript have been written to call the request methods in **AjaxController.php**.  It's worth noting that jQuery could easily complete the AJAX requests itself without the need for **AjaxController.php**, but the app has been writtin this way to demonstrate how to route requests through to the **AJaxController.php** methods.
 
 Loading the UI
 ..............
@@ -452,86 +423,107 @@ Loading the UI
 This final load-time action has been split into its own small section as it essentially controls what the user sees upon loading the app.
 
 1. An AJAX POST request is made to the **/ajax/load-layout** PHP method.
-2. The **/ajax/load-layout** request loads the default layout from the **/config/dashboard.json** file we created earlier.
-3. The contents of **/config/dashboard.json** are parsed and the individual UI elements ("boxes") are created.
+2. The **/ajax/load-layout** request loads the saved layout from the **/config/dashboard.json** file we created earlier.
+3. The contents of **/config/dashboard.json** are parsed and the individual UI elements ("boxes") are created.  Remember that the contents 
 4. Finally, CSS classes are added to the new UI elements, e.g. setting background colour and font-size.
 
 JavaScript functions
 ....................
 
-The other functions within **ntnx.js** are only executed when specific events are fired.  Let's look at the **physicalInfo** function in more detail now.
+The other functions within **ntnx.js** are only executed when specific events are fired.  Let's look at the **pcListEntities** function in more detail now.
 
-The **physicalInfo** function is as follows.  Please don't add this code again; it is already part of your **ntnx.js** script.
+The **pcListEntities** function is as follows.  Please don't add this code again; it is already part of your **ntnx.js** script.
 
 .. code-block:: JavaScript
 
-    physicalInfo: function( token, cvmAddress, username, password )
-    {
-        physicalData = $.ajax({
-            url: '/ajax/physical-info',
+    /**
+     * 
+     * @param {*} token 
+     * @param {*} cvmAddress 
+     * @param {*} username 
+     * @param {*} password 
+     * @param {*} entity 
+     * @param {*} pageElement 
+     * @param {*} elementTitle 
+     * 
+     * main function to build and send the entity list requests
+     * the previous version of this used a single function for each request
+     * 
+     */
+    pcListEntities: function( token, cvmAddress, username, password, entity, pageElement, elementTitle ) {
+
+        pcEntityInfo = $.ajax({
+            url: '/ajax/pc-list-entities',
             type: 'POST',
             dataType: 'json',
-            data: { _token: token, _cvmAddress: cvmAddress, _username: username, _password: password },
+            data: { _token: token, _cvmAddress: cvmAddress, _username: username, _password: password, _entity: entity, _pageElement: pageElement, _elementTitle: elementTitle },
         });
 
-        physicalData.done( function(data) {
-            NtnxDashboard.resetCell( 'hosts' );
-            $( '#hosts' ).addClass( 'info_big' ).append( '<div style="color: #6F787E; font-size: 25%; padding: 10px 0 0 0;">' + data.hostCount + ' Hosts</div>' );
-            $( '#hosts' ).append( '<div style="color: #6F787E; font-size: 25%; padding: 10px 0 0 0;">' + data.hostSerials + '</div>' );
+        pcEntityInfo.done( function(data) {
+
+            NtnxDashboard.resetCell( pageElement );
+            $( '#' + pageElement  ).addClass( 'info_big' ).append( '<div style="color: #6F787E; font-size: 25%; padding: 10px 0 0 0;">' + elementTitle + '</div><div>' + data.results.metadata.total_matches + '</div><div></div>');
+
+            switch( entity ) {
+                case 'project':
+
+                    $( '#project_details' ).addClass( 'info_big' ).html( '<div style="color: #6F787E; font-size: 25%; padding: 10px 0 0 0;">Project List</div>' );
+
+                    $( data.results.entities ).each( function( index, item ) {
+                        $( '#project_details' ).append( '<div style="color: #6F787E; font-size: 25%; padding: 10px 0 0 0;">' +  item.status.name + '</div>' );
+                    });
+
+                    $( '#project_details' ).append( '</div><div></div>' );
+
+                default:
+                    break;
+            }
+
         });
 
-        physicalData.fail(function ( jqXHR, textStatus, errorThrown )
-        {
-            $( '#status_new' ).removeClass().html( textStatus + ' - ' + errorThrown ).addClass( 'alert' ).addClass( 'alert-error' );
-        });
     },
+    /* pcListEntities */
 
 Going through this function, we can see it does the following things.
 
-1. An AJAX POST request is made to the **/ajax/physical-info** PHP method (we'll also look at that shortly).
+1. An AJAX POST request is made to the **/ajax/pc-list-entities** PHP method (we'll also look at that shortly).
 2. If the request was successful, the results of the AJAX request are parsed.
 3. The parsed data is dynamically shown in the app UI via the jQuery **.append** method.
+4. The location and formatting of the information shown in the browser is controlled via the **entity**, **pageElement** and **elementTitle** parameters.
 
-From **app/Http/Controllers/AjaxController.php**, the **/ajax/physical-info** method is as follows.
+From **app/Http/Controllers/AjaxController.php**, the **/ajax/pc-list-entities** method, **postPcListEntities**, is as follows.
 
 .. code-block:: php
 
     /**
-     * Return some information about the specified cluster's physical details (nodes etc)
-     * 
+     * Return a list of Prism Central managed entities, based on a specified entity identifier/name
+     *
      * @return \Illuminate\Http\JsonResponse
      */
-    public function postPhysicalInfo()
+    public function postPcListEntities()
     {
-        $parameters = ['username' => $_POST['_username'], 'password' => $_POST['_password'], 'cvmAddress' => $_POST['_cvmAddress'], 'objectPath' => 'hosts'];        
 
-        $physical = (new ApiRequest(new ApiRequestParameters($parameters)))->doApiRequest();
+        $entity = $_POST['_entity'];
 
-        $hostCount = $physical->metadata->grand_total_entities;
+        $body = [ 'kind' => $entity ];
 
-        $hostSerials = '';
+        $parameters = ['username' => $_POST['_username'], 'password' => $_POST['_password'], 'cvmAddress' => $_POST['_cvmAddress'], 'objectPath' => $entity . 's/list', 'method' => 'POST', 'body' => json_encode($body), 'entity' => $entity ];
+          
+        $results = (new ApiRequest(new ApiRequestParameters($parameters)))->doApiRequest(null, 'POST');
 
-        foreach ($physical->entities as $host) {
-            $hostSerials = $hostSerials . 'S/N&nbsp;' . $host->serial . '<br>';
-        }
-
-        return response()->json(['hostCount' => $hostCount, 'hostSerials' => $hostSerials]);
+        return response()->json(['results' => $results]);
     }
 
-The first thing to note is the name of the method within **/app/Http/Controllers/AjaxController.php**.  The **postPhysicalInfo** name is how Laravel identifies that the only way the method can be called is via an HTTP POST request, with the following camel-case "words" instructing PHP how to refer to that method.
-
-In this example, **postPhysicalInfo** is called via an HTTP POST request to **physical-info**.
+In this example, **postPcListEntities** is called via an HTTP POST request to **pc-list-entities**.
 
 Going through this method, we can see it does the following things.
 
-1. Creates an array containing a number of variables e.g. cluster username & password, the IP address of the cluster or CVM and the API endpoint we want to query.
-2. An instance of our **ApiRequest** class is created, with an instance of our **ApiRequestParameters** class passed to the **ApiRequest** constructor.
-3. Using method-chaining (**->** in PHP), we are then calling **doApiRequest** to execute the actual request.
-4. Parses the results of the request found in the request's **metadata/grand_total_entities** property to find out how many hosts are in our cluster.
-5. Loops through the list of hosts and prepares to dynamically shows the serial number in the app UI via the jQuery **.append** method.
-6. Returns all the above info in JSON format, ready for our JavaScript to process.
-
-Most of the other functions in **ntnx.js** work the exact same way.  They prepare the request parameters, create and execute the request, then pass the results back to **ntnx.js** for showing in the UI.
+1. Gets the requests entity name from the **_entity** POST variable.
+2. Sets up a very simple HTTP POST request body that tells the v3 API which "kind" of entity to return.
+3. Creates an array containing a number of variables e.g. cluster username & password, the IP address of the cluster or CVM and the API endpoint we want to query.  This array is used as the request parameters shortly.
+4. An instance of our **ApiRequest** class is created, with an instance of our **ApiRequestParameters** class passed to the **ApiRequest** constructor.
+5. Using method-chaining (**->** in PHP), we are then calling **doApiRequest** to execute the actual request.
+6. Returns the results of the API request's JSON response and makes the entire response available to the JavaScript function that called it.
 
 Final Testing
 .............

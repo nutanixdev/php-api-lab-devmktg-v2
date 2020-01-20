@@ -39,9 +39,9 @@ In order for this lab to be successful, you will first need to install a base La
 
 To complete this step, ensure you have PHP Composer installed and that is functioning correctly.  A quick test is to run the following command.
 
-.. code-block::
+.. code-block:: bash
 
-  composer --version
+   composer --version
 
 .. figure:: images/create_structure_check_composer.png
 
@@ -51,7 +51,7 @@ Now we can install the base application.  All dependencies are taken care of dur
 
    Make sure your terminal's current directory is the "developer" directory (see steps above).
 
-#. From a command prompt, run the following command.  Make sure you replace **<your_initials>** with your actual initials.  For example ...
+#. From a command prompt, run the following command.  Make sure you replace **<your_initials>** with your actual initials.  For example:
 
    .. code-block:: bash
 

@@ -5,7 +5,7 @@ To summarise really quickly, we currently have a Laravel application setup as fo
 
 - Base Laravel 6 application
 - **AjaxController** (empty for now) and **HomeController** classes
-- Customised routing to control which controller method is used when accessing the app
+- Customised routing to control which controller methods are used for each URL in the app
 - Custom CSS stylesheets to control how our application looks
 - Third-party libraries and packages to control additional appearance options and to provide additional JavaScript capabilities
 
@@ -90,59 +90,29 @@ For this reason, it does quite a few things.  Let's populate the contents of tha
             }
 
             /**
-            * Return some information about the specified cluster
+            * Return a list of Prism Central managed entities, based on a specified entity identifier/name
             *
             * @return \Illuminate\Http\JsonResponse
             */
-            public function postClusterInfo()
+            public function postPcListEntities()
             {
-                $parameters = ['username' => $_POST['_username'], 'password' => $_POST['_password'], 'cvmAddress' => $_POST['_cvmAddress'], 'objectPath' => 'cluster'];
-            
-                $results = (new ApiRequest(new ApiRequestParameters($parameters)))->doApiRequest(null, 'GET');
+
+                $entity = $_POST['_entity'];
+
+                $body = [ 'kind' => $entity ];
+
+                $parameters = ['username' => $_POST['_username'], 'password' => $_POST['_password'], 'cvmAddress' => $_POST['_cvmAddress'], 'objectPath' => $entity . 's/list', 'method' => 'POST', 'body' => json_encode($body), 'entity' => $entity ];
+                
+                $results = (new ApiRequest(new ApiRequestParameters($parameters)))->doApiRequest(null, 'POST');
 
                 return response()->json(['results' => $results]);
             }
 
             /**
-            * Return some information about the VMs running on the specified cluster
-            *
-            * @return \Illuminate\Http\JsonResponse
-            */
-            public function postVmInfo()
-            {
-                $parameters = ['username' => $_POST['_username'], 'password' => $_POST['_password'], 'cvmAddress' => $_POST['_cvmAddress'], 'objectPath' => 'vms'];
-
-                $vms = (new ApiRequest(new ApiRequestParameters($parameters)))->doApiRequest();
-
-                $vmCount = $vms->metadata->grand_total_entities;
-
-                return response()->json(['vmCount' => $vmCount]);
-            }
-
-            /**
-            * Return some information about the specified cluster's physical details (nodes etc)
             * 
-            * @return \Illuminate\Http\JsonResponse
-            */
-            public function postPhysicalInfo()
-            {
-                $parameters = ['username' => $_POST['_username'], 'password' => $_POST['_password'], 'cvmAddress' => $_POST['_cvmAddress'], 'objectPath' => 'hosts'];        
-
-                $physical = (new ApiRequest(new ApiRequestParameters($parameters)))->doApiRequest();
-
-                $hostCount = $physical->metadata->grand_total_entities;
-
-                $hostSerials = '';
-
-                foreach ($physical->entities as $host) {
-                    $hostSerials = $hostSerials . 'S/N&nbsp;' . $host->serial . '<br>';
-                }
-
-                return response()->json(['hostCount' => $hostCount, 'hostSerials' => $hostSerials]);
-            }
-
-            /**
             * Return some high level storage container performance stats
+            *
+            * This function isn't used in v2 of the lab, but has been left here as useful reference when gathering stats
             *
             * @return \Illuminate\Http\JsonResponse
             */
@@ -190,10 +160,10 @@ For this reason, it does quite a few things.  Let's populate the contents of tha
 
 What does the **AjaxController** class do?
 
-- Primarily, it contains numerous methods that will be called by various actions through the application.
-- For example, **AjaxController.php** contains a method named **postSaveToJson()**.  This method is called when the user clicks the **Save Layout** button in the application and instructs the app how to save the customised layout for later use.
-- From around line 59 onwards, the remaining methods are making the actual API requests to the Nutanix REST API.
-- For example, **AjaxController.php** contains a method named **postClusterInfo()**.  This method is called when the app needs to talk to the Nutanix REST API and get details about the Prism Central instance's configuration.  These details include the cluster name, the number of nodes, node serial number ... etc.
+- Contains various methods to load the initial dashboard layout and revert the layout to a sensible default, if required.  These methods are **postLoadLayout()** and **postLoadDefault()**.
+- Contains methods to save the user's layout, if they decide to keep their changes.  This method, **postSaveToJson()**, is called when the user clicks the **Save Layout** button in the application and instructs the app how to save the customised layout for later use.
+- Contains the important important method: **postPcListEntities()**.  This method is used in all our API requests and accepts a number of parameters to specify how the request should work.
+- Lastly the method named **postContainerInfo()** has been left in the **AjaxControllerClass** class.  This isn't used in v2 of this lab but can be used for reference should you decide to add stats later.
 
 Creating the JavaScript
 .......................

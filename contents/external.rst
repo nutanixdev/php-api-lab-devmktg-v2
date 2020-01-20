@@ -18,6 +18,8 @@ Checking directory structure
    - **public/js/ntnx.js**
    - **public/js/vendor**
 
+   Commands to create these folders, if required, are as follows:
+
    .. code-block:: bash
 
       mkdir public/css
@@ -25,21 +27,23 @@ Checking directory structure
       mkdir public/css/vendor
       mkdir public/js
       mkdir public/js/vendor
-      touch public/css/ntnx.css
-      touch public/js/ntnx.js
 
 Adding packages
 ...............
 
-#. From the URLs below, grab the relevant file, make sure the name is correct and save it into the appropriate directory.
+#. Download each resources file linked below and extract it into the appropriate directory.
 
    - `CSS <https://github.com/nutanixdev/lab-assets/blob/master/php-lab-v2/resources/css-vendor.zip?raw=true>`_ - extract to **public/css/vendor**
    - `Javascript <https://github.com/nutanixdev/lab-assets/blob/master/php-lab-v2/resources/js-vendor.zip?raw=true>`_ - extract to **public/js/vendor**
    - `Fonts <https://github.com/nutanixdev/lab-assets/blob/master/php-lab-v2/resources/fonts.zip?raw=true>`_ - extract to **public/css/fonts**
 
-   .. notes::
+   .. note::
    
       When extracting the ZIP files, ensure they are extracted **directly** to the directories above and not into subdirectories.
+
+   Here is how the app's **public** directory structure should look at the completion of this step:
+
+   .. figure:: images/public_structure.png
 
 Further testing
 ...............

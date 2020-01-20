@@ -39,7 +39,7 @@ The Nutanix API App Labs will cover a couple of key points.
 
   Because this lab is written to be completed by those with little to no experience with Laravel/PHP or Nutanix APIs, it will step-through each part of the application being created.  Experienced developers may wish to go over the API intro in the next section so that it can be integrated into their own applications.
 
-  This version of the lab is also an update to v1.1 published in 2018.  Laravel 5.1 was used in that version, whereas this version will used the Laravel 6.
+  This version of the lab is also an update to v1.1 published in 2018.  Laravel 5.1 was used in that version, whereas this version will use Laravel 6.
 
 .. _requirements:
 
@@ -52,6 +52,8 @@ To successfully complete this app lab, you will need an environment that meets t
 - An installation of PHP version 7.2.  For this lab, we will use the built-in PHP web server; there's no requirement to install WAMP, MAMP, IIS etc.
 - PHP Composer (install from the `Composer <https://getcomposer.org/doc/00-intro.mdf>`_ website)
 - The text editor of your choice
+- A Nutanix cluster, running Acropolis 5.11 or later
+- An instance of Prism Central version 5.11 or later, with your lab cluster registered against that instance
 
 .. note::
 

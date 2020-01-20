@@ -77,6 +77,9 @@ API parameter model
 
             /**
             * The sub-path for the request, e.g. stats
+            *
+            * Note this variable is not used in v2 of this lab, but has been left to ensure the postContainerInfo function can still be used
+            *
             */
             var $objectSubPath;
 
@@ -101,6 +104,16 @@ API parameter model
             var $interval;
 
             /**
+            * The request body, if required
+            */
+            var $body;
+
+            /**
+            * The entity type to list, if that is the type of request being made
+            */
+            var $entity;
+
+            /**
             * ApiRequestParameters constructor.
             * @param array $attributes
             */
@@ -111,7 +124,7 @@ API parameter model
                 $this->cvmAddress = $attributes['cvmAddress'];
                 $this->cvmPort = isset($attributes['cvmPort']) ? $attributes['cvmPort'] : '9440';
                 $this->topLevelStatsPath = isset($attributes['topLevelPath']) ? $attributes['topLevelPath'] : 'PrismGateway/services/rest/v1';
-                $this->topLevelPath = isset($attributes['topLevelPath']) ? $attributes['topLevelPath'] : 'api/nutanix/v2.0';
+                $this->topLevelPath = isset($attributes['topLevelPath']) ? $attributes['topLevelPath'] : 'api/nutanix/v3';
                 $this->connectionTimeout = isset($attributes['connectionTimeout']) ? $attributes['connectionTimeout'] : 5;
                 $this->method = isset($attributes['method']) ? $attributes['method'] : 'GET';
                 $this->objectPath = $attributes['objectPath'] != null ? $attributes['objectPath'] : null;
@@ -121,13 +134,15 @@ API parameter model
                 $this->startTime = isset($attributes['startTime']) ? $attributes['startTime'] : null;
                 $this->endTime = isset($attributes['endTime']) ? $attributes['endTime'] : null;
                 $this->interval = isset($attributes['interval']) ? $attributes['interval'] : null;
+                $this->body = isset($attributes['body']) ? $attributes['body'] : null;
+                $this->entity = isset($attributes['entity']) ? $attributes['entity'] : null;
             }
         }
 
 What does the **ApiRequestParameters** class do?
 
 - Specifies a number of variables that can be passed to an API request e.g. the IP address of our cluster, username, password
-- Specifies, importantly, the base URL for our API calls: **api/nutanix/v2.0**
+- Specifies, importantly, the base URL for our API calls in this updated lab: **api/nutanix/v3**
 - Checks to make sure all variables have been configured, otherwise some sensible defaults are set (null is the only option for some of them, as seen above)
 
 API request class
@@ -161,6 +176,7 @@ API request class
 
             /**
             * ApiRequest constructor.
+            * 
             * @param ApiRequestParameters $parameters
             */
             public function __construct(ApiRequestParameters $parameters)
@@ -180,72 +196,64 @@ API request class
             {
 
                 $path = '';
-                switch ($this->parameters['method']) {
+                switch ($this->parameters->method) {
                     case 'GET':
 
-                        if (isset($this->parameters['objectId'])) {
+                        if (isset($this->parameters->objectId)) {
                             $path = sprintf(
                                 "https://%s:%s/%s/%s/%s/%s?metrics=%s&startTimeInUsecs=%s&endTimeInUsecs=%s",
-                                $this->parameters['cvmAddress'],
-                                $this->parameters['cvmPort'],
-                                $this->parameters['topLevelStatsPath'],
-                                $this->parameters['objectPath'],
-                                $this->parameters['objectId'],
-                                $this->parameters['objectSubPath'],
-                                $this->parameters['metric'],
+                                $this->parameters->cvmAddress,
+                                $this->parameters->cvmPort,
+                                $this->parameters->topLevelStatsPath,
+                                $this->parameters->objectPath,
+                                $this->parameters->objectId,
+                                $this->parameters->objectSubPath,
+                                $this->parameters->metric,
                                 \Carbon\Carbon::parse($this->parameters->startTime)->timestamp * 1000000,
                                 \Carbon\Carbon::parse($this->parameters->endTime)->timestamp * 1000000
                             );
                         } else {
                             $path = sprintf(
                                 "https://%s:%s/%s/%s/",
-                                $this->parameters['cvmAddress'],
-                                $this->parameters['cvmPort'],
-                                $this->parameters['topLevelPath'],
-                                $this->parameters['objectPath']
+                                $this->parameters->cvmAddress,
+                                $this->parameters->cvmPort,
+                                $this->parameters->topLevelPath,
+                                $this->parameters->objectPath
                             );
                         }
                         break;
                     case 'POST':
                         $path = sprintf(
                             "https://%s:%s/%s/%s",
-                            $this->parameters['cvmAddress'],
-                            $this->parameters['cvmPort'],
-                            $this->parameters['topLevelPath'],
-                            $this->parameters['objectPath']
+                            $this->parameters->cvmAddress,
+                            $this->parameters->cvmPort,
+                            $this->parameters->topLevelPath,
+                            $this->parameters->objectPath
                         );
                         break;
                 }
 
                 $client = new \GuzzleHttp\Client();
 
-                $request = $client->createRequest(
-                    $this->parameters['method'],
+                $response = $client->request(
+                    $this->parameters->method,
                     $path,
                     [
-                        'config' => [
-                            'curl' => [
-                                CURLOPT_HTTPAUTH => CURLAUTH_BASIC,
-                                CURLOPT_USERPWD => $this->parameters['username'] . ':' . $this->parameters['password'],
-                                CURLOPT_SSL_VERIFYHOST => false,
-                                CURLOPT_SSL_VERIFYPEER => false
-                            ],
-                            'verify' => false,
-                            'timeout' => $this->parameters['connectionTimeout'],
-                            'connect_timeout' => $this->parameters['connectionTimeout'],
-                        ],
+                        'auth' => [ $this->parameters->username, $this->parameters->password ],
+                        'verify' => false,
+                        'connect_timeout' => $this->parameters->connectionTimeout,
+                        'read_timeout' => $this->parameters->connectionTimeout,
+                        'timeout' => $this->parameters->connectionTimeout,
                         'headers' => [
                             "Accept" => "application/json",
                             "Content-Type" => "application/json"
                         ],
-                        'body' => json_encode($postParameters)
+                        'body' => $this->parameters->body
                     ]
                 );
 
-                $response = $client->send($request);
-
                 /* return the response data in JSON format */
-                return ($response->json());
+                return (json_decode($response->getBody()));
             }
         }
 
@@ -257,7 +265,7 @@ What does the **ApiRequest** class do?
 
 .. raw:: html
 
-  <strong><font color="red">Important note: The classes used in this app intentionally bypass the verification of SSL certificates used during the CVM/cluster connection.  It is strongly advised that appropriate security practices are followed in production environments and that all certificates are verified as connections are made.</font></strong><br>
+  <p><strong><font color="red">Important note: The classes used in this app intentionally bypass the verification of SSL certificates used during the CVM/cluster connection.  It is strongly advised that appropriate security practices are followed in production environments and that all certificates are verified as connections are made.</font></strong></p>
 
 Making classes usable
 .....................
