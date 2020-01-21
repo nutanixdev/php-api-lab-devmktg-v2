@@ -73,6 +73,10 @@ Now we can install the base application.  All dependencies are taken care of dur
       .. code-block:: bash
 
       cd c:\developer\api-app-lab-v2-<your initials>
+
+.. note::
+
+   Experienced Laravel developers will recognise that some of the commands below were automatically run during the project creation process.  We are running them again purely to make 100% sure all packages are up to date and that our app is ready for use.
  
 #.  Run the following command.  This will make sure all required Laravel packages are installed.
 

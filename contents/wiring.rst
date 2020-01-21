@@ -162,7 +162,7 @@ What does the **AjaxController** class do?
 
 - Contains various methods to load the initial dashboard layout and revert the layout to a sensible default, if required.  These methods are **postLoadLayout()** and **postLoadDefault()**.
 - Contains methods to save the user's layout, if they decide to keep their changes.  This method, **postSaveToJson()**, is called when the user clicks the **Save Layout** button in the application and instructs the app how to save the customised layout for later use.
-- Contains the important important method: **postPcListEntities()**.  This method is used in all our API requests and accepts a number of parameters to specify how the request should work.
+- Contains the most important method: **postPcListEntities()**.  This method is used in all our API requests and accepts a number of parameters to specify how the request should work.
 - Lastly the method named **postContainerInfo()** has been left in the **AjaxControllerClass** class.  This isn't used in v2 of this lab but can be used for reference should you decide to add stats later.
 
 Creating the JavaScript

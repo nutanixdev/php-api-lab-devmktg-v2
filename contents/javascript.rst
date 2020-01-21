@@ -387,7 +387,7 @@ What does the **ntnx.js** script do?  The functions of **ntnx.ns**, in load-time
 3. Altering a small number of UI elements so they appear correctly.
 4. Binding the user interface events to other functions within **ntnx.js**.  This is a critical step as it instructs the browser and the JavaScript what to do when "something" happens.  For example, which part of the script should execute when a user enters cluster info and clicks the "Go!" button?
 
-You'll note that many of the functions in **ntnx.js** are "mirrored" by methods in the **AjaxController.php** class.  This is very much by design as click events in our JavaScript have been written to call the request methods in **AjaxController.php**.  It's worth noting that jQuery could easily complete the AJAX requests itself without the need for **AjaxController.php**, but the app has been writtin this way to demonstrate how to route requests through to the **AJaxController.php** methods.
+You'll note that many of the functions in **ntnx.js** are "mirrored" by methods in the **AjaxController.php** class.  This is very much by design as click events in our JavaScript have been written to call the request methods in **AjaxController.php**.  It's worth noting that jQuery could easily complete the AJAX requests itself without the need for **AjaxController.php**, but the app has been written this way to demonstrate how to route requests through to the **AJaxController.php** methods.
 
 Loading the UI
 ..............
@@ -396,7 +396,7 @@ This final load-time action has been split into its own small section as it esse
 
 1. An AJAX POST request is made to the **/ajax/load-layout** PHP method.
 2. The **/ajax/load-layout** request loads the saved layout from the **/config/dashboard.json** file we created earlier.
-3. The contents of **/config/dashboard.json** are parsed and the individual UI elements ("boxes") are created.  Remember that the contents 
+3. The contents of **/config/dashboard.json** are parsed and the individual UI elements ("boxes") are created.
 4. Finally, CSS classes are added to the new UI elements, e.g. setting background colour and font-size.
 
 JavaScript functions
@@ -404,7 +404,11 @@ JavaScript functions
 
 The other functions within **ntnx.js** are only executed when specific events are fired.  Let's look at the **pcListEntities** function in more detail now.
 
-The **pcListEntities** function is as follows.  Please don't add this code again; it is already part of your **ntnx.js** script.
+The **pcListEntities** function is as follows.
+
+.. note::
+
+   Please don't add this code again; it is already part of your **ntnx.js** script.
 
 .. code-block:: JavaScript
 
@@ -460,10 +464,14 @@ Going through this function, we can see it does the following things.
 
 1. An AJAX POST request is made to the **/ajax/pc-list-entities** PHP method (we'll also look at that shortly).
 2. If the request was successful, the results of the AJAX request are parsed.
-3. The parsed data is dynamically shown in the app UI via the jQuery **.append** method.
+3. The parsed data is dynamically shown in the app UI via the jQuery **.append** method.  The **.append** method takes specified text or HTML and adds it to the end of the content already shown.
 4. The location and formatting of the information shown in the browser is controlled via the **entity**, **pageElement** and **elementTitle** parameters.
 
 From **app/Http/Controllers/AjaxController.php**, the **/ajax/pc-list-entities** method, **postPcListEntities**, is as follows.
+
+.. note::
+
+   Please don't add this code again; it is already part of your **AjaxController.php** class.
 
 .. code-block:: php
 
@@ -486,11 +494,11 @@ From **app/Http/Controllers/AjaxController.php**, the **/ajax/pc-list-entities**
         return response()->json(['results' => $results]);
     }
 
-In this example, **postPcListEntities** is called via an HTTP POST request to **pc-list-entities**.
+In this example, **postPcListEntities** is called via an HTTP POST request to **/ajax/pc-list-entities**.
 
 Going through this method, we can see it does the following things.
 
-1. Gets the requests entity name from the **_entity** POST variable.
+1. Gets the request's entity name from the **_entity** POST variable.  For example, an entity could be **vm**, **app**, **blueprint** or any other iterable entity that can be listed by Prism Central.
 2. Sets up a very simple HTTP POST request body that tells the v3 API which "kind" of entity to return.
 3. Creates an array containing a number of variables e.g. cluster username & password, the IP address of the cluster or CVM and the API endpoint we want to query.  This array is used as the request parameters shortly.
 4. An instance of our **ApiRequest** class is created, with an instance of our **ApiRequestParameters** class passed to the **ApiRequest** constructor.

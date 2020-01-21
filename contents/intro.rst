@@ -149,8 +149,8 @@ Version Use Cases
 With what we know about the various API versions now, let's take a look at why you might use each API.
 
 - **v1**: Legacy application support and entity-specific performance metrics.  Without specific requirements, the v1 APIs should not be used.
-- **v2.0 via Prism Element**: Migration away from legacy APIs, combination of older v0.8 and v1 APIs into single GA API, <em>cluster-specific</em> tasks e.g. storage container information & management.
-- **v3 via Prism Central**: Latest supported API aimed at managing <em>environment-wide</em> configuration and entities.  Unlike API v2.0 on Prism Element, this includes a vast array of entities such as Nutanix Calm Blueprints, RBAC, Applications and Nutanix Flow Network Security Rules.  The v3 APIs are not supported on Prism Element.
+- **v2.0 via Prism Element**: Migration away from legacy APIs, combination of older v0.8 and v1 APIs into single GA API, **cluster-specific** tasks e.g. storage container information & management.
+- **v3 via Prism Central**: Latest supported API aimed at managing **environment-wide** configuration and entities.  Unlike API v2.0 on Prism Element, this includes a vast array of entities such as Nutanix Calm Blueprints, RBAC, Applications and Nutanix Flow Network Security Rules.  The v3 APIs are not supported on Prism Element.
 
 Summary
 .......

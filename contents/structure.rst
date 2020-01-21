@@ -15,10 +15,6 @@ The key components of our app are as follows.
 Adding required packages
 ........................
 
-.. note::
-
-  **Raw source file for this section, if required:** https://raw.githubusercontent.com/nutanixdev/lab-assets/master/php-lab-v2/composer.json
-
 #. If your Laravel application is still running, press Ctrl-C to terminate the built-in PHP web server.
 
 #. From the command line, run the following commands.  This will add 3 required packages to our application's **composer.json** file.
