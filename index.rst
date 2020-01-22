@@ -50,7 +50,7 @@ To successfully complete this app lab, you will need an environment that meets t
 
 - Git, either by command-line or GUI application
 - An installation of PHP version 7.2.  For this lab, we will use the built-in PHP web server; there's no requirement to install WAMP, MAMP, IIS etc.
-- PHP Composer (install from the `Composer <https://getcomposer.org/doc/00-intro.mdf>`_ website)
+- PHP Composer (install from the `Composer <https://getcomposer.org/doc/00-intro.md>`_ website)
 - The text editor of your choice
 - A Nutanix cluster, running Acropolis 5.11 or later
 - An instance of Prism Central version 5.11 or later, with your lab cluster registered against that instance
