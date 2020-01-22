@@ -351,6 +351,8 @@ To ensure everything is modular and easy to modify later, the **ntnx.js** JavaSc
                         NtnxDashboard.pcListEntities( $( '#csrf_token' ).val(), cvmAddress, username, password, 'project', 'project_count', 'Project Count' );
                         NtnxDashboard.pcListEntities( $( '#csrf_token' ).val(), cvmAddress, username, password, 'app', 'app_count', 'Calm Apps' );
 
+                        NtnxDashboard.containerInfo( $( '#csrf_token' ).val(), cvmAddress, username, password, 'controllerIOPS', 'Controller IOPS' );
+
                     }
 
                     e.preventDefault();
@@ -374,6 +376,67 @@ To ensure everything is modular and easy to modify later, the **ntnx.js** JavaSc
             },
             /* bindEvents */
 
+            containerInfo: function( token, cvmAddress, username, password ) {
+
+                /* AJAX call to get some container stats */
+                request = $.ajax({
+                    url: '/ajax/container-info',
+                    type: 'POST',
+                    dataType: 'json',
+                    data: { _token: token, _cvmAddress: cvmAddress, _username: username, _password: password },
+                });
+
+                request.done( function(data) {
+                    var plot1 = $.jqplot ('controllerIOPS', data.stats, {
+                        title: 'Controller Average I/O Latency',
+                        animate: true,
+                        axesDefaults: {
+                            labelRenderer: $.jqplot.CanvasAxisLabelRenderer,
+                            tickOptions: {
+                                showMark: false,
+                                show: true,
+                            },
+                            showTickMarks: false,
+                            showTicks: false
+                        },
+                        seriesDefaults: {
+                            rendererOptions: {
+                                smooth: false
+                            },
+                            showMarker: false,
+                            fill: true,
+                            fillAndStroke: true,
+                            color: '#b4d194',
+                            fillColor: '#b4d194',
+                            fillAlpha: '0.3',
+                            // fillColor: '#bfde9e',
+                            shadow: false,
+                            shadowAlpha: 0.1,
+                        },
+                        axes: {
+                            xaxis: {
+                                min: 5,
+                                max: 120,
+                                tickOptions: {
+                                    showGridline: true,
+                                }
+                            },
+                            yaxis: {
+                                tickOptions: {
+                                    showGridline: false,
+                                }
+                            }
+                        }
+                    });
+
+                    NtnxDashboard.resetCell( 'containers' );
+                    $( '#containers' ).addClass( 'info_big' ).append( '<div style="color: #6F787E; font-size: 25%; padding: 10px 0 0 0;">Container(s)</div><div>' + data.containerCount + '</div><div></div>');
+
+                });
+
+            },
+            /* containerInfo */
+
         };
 
         NtnxDashboard.init({
@@ -386,6 +449,7 @@ What does the **ntnx.js** script do?  The functions of **ntnx.ns**, in load-time
 2. Creates an instance of the jQuery **gridster** plugin class and configures the properties of that instance.  For our app, we are setting things like the element margins, the number of columns and telling the elements they are "draggable".
 3. Altering a small number of UI elements so they appear correctly.
 4. Binding the user interface events to other functions within **ntnx.js**.  This is a critical step as it instructs the browser and the JavaScript what to do when "something" happens.  For example, which part of the script should execute when a user enters cluster info and clicks the "Go!" button?
+5. There's also a function named **containerInfo** that collects metrics for the **first storage container in the first cluster managed by the specified Prism Central instance**.  It's done this way since this is just a demo app and has been included an example only.  Please modify this if you would like to collect stats in a production app.
 
 You'll note that many of the functions in **ntnx.js** are "mirrored" by methods in the **AjaxController.php** class.  This is very much by design as click events in our JavaScript have been written to call the request methods in **AjaxController.php**.  It's worth noting that jQuery could easily complete the AJAX requests itself without the need for **AjaxController.php**, but the app has been written this way to demonstrate how to route requests through to the **AJaxController.php** methods.
 
