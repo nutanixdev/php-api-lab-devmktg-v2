@@ -32,9 +32,13 @@ Adding required packages
 Configuring new packages
 ........................
 
+.. note::
+
+   All directories and paths referenced from this point in the lab will be located in **api-app-lab-v2-<your_initials>** directory you created in the previous step.
+
 With the new packages added, we need to tell Laravel how to use them.
 
-#. Open the **config/app.php** file and navigate to the **providers** section.
+#. In your code editor, open the **config/app.php** file and navigate to the **providers** section.
 
 #. Add the following lines just before the end of the **providers** section.
 
