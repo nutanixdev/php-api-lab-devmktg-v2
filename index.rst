@@ -48,7 +48,7 @@ Requirements
 
 To successfully complete this app lab, you will need an environment that meets the following specifications.
 
-- An installation of `PHP version 7.2 <https://www.php.net/manual/en/install.php>`_.  For this lab, we will use the built-in PHP web server; there's no requirement to install WAMP, MAMP, IIS etc.  To check your PHP version, open a terminal or command prompt and enter the following command:
+- An installation of `PHP version 7.2 <https://www.php.net/manual/en/install.php>`_ or later.  For this lab, we will use the built-in PHP web server; there's no requirement to install WAMP, MAMP, IIS etc.  To check your PHP version, open a terminal or command prompt and enter the following command:
 
    .. code-block:: bash
 
