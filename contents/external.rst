@@ -8,7 +8,7 @@ Because there's no need for us to write these packages ourselves, we can grab th
 Checking directory structure
 ............................
 
-#. Create the following directories and files.  Windows users can create new folders using Windows Explorer and new files using Notepad.
+#. Create the following directories.  Windows users can create new folders using Windows Explorer.
 
    - **public/css**
    - **public/css/fonts**
@@ -26,7 +26,7 @@ Checking directory structure
       mkdir public/js
       mkdir public/js/vendor
 
-#. Create the following files.  They can both remain empty for now.
+#. Create the following files.  They can both remain empty for now.  Windows users can create new files using Notepad (remember to save the file type as "All Files").
 
    - **public/css/ntnx.css**
    - **public/js/ntnx.js**   
