@@ -11,11 +11,9 @@ Checking directory structure
 #. Create the following directories and files.  Windows users can create new folders using Windows Explorer and new files using Notepad.
 
    - **public/css**
-   - **public/css/ntnx.css**
    - **public/css/fonts**
    - **public/css/vendor**
    - **public/js**
-   - **public/js/ntnx.js**
    - **public/js/vendor**
 
    Commands to create these folders, if required, are as follows:
@@ -27,6 +25,11 @@ Checking directory structure
       mkdir public/css/vendor
       mkdir public/js
       mkdir public/js/vendor
+
+#. Create the following files.  They can both remain empty for now.
+
+   - **public/css/ntnx.css**
+   - **public/js/ntnx.js**   
 
 Adding packages
 ...............

@@ -54,6 +54,16 @@ To successfully complete this app lab, you will need an environment that meets t
 
       php --version
 
+   .. note::
+
+      If you are installing PHP from source or selecting PHP components/libraries, please ensure you enable PHP-dom.  This is required for correct Laravel operation.
+
+      To check if PHP-dom is installed, the following command can be used.  Look for **dom** in the results.
+
+      .. code-block:: bash
+
+         php -m | head
+
 - `PHP Composer <https://getcomposer.org/doc/00-intro.md>`_.  Install from the `PHP Composer <https://getcomposer.org/doc/00-intro.md>`_ website, making sure you can run **composer** in the terminal after installation.
 
    .. code-block:: bash
